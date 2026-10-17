@@ -9,11 +9,9 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.salkscore.parkour.ParkourPlugin;
 import io.github.salkscore.parkour.course.Course;
 import io.github.salkscore.parkour.course.CourseManager;
-import io.github.salkscore.parkour.course.Plates;
 import io.github.salkscore.parkour.run.StopReason;
 import io.github.salkscore.parkour.util.Locations;
 import io.github.salkscore.parkour.util.Messages;
-import io.github.salkscore.parkour.util.Settings;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import java.util.Locale;
@@ -68,13 +66,7 @@ final class AdminCommands extends CommandGroup {
         if (course == null) return 0;
         plugin.runs().stopAll(course, StopReason.EDIT);
 
-        Settings.Plates plates = plugin.settings().plates();
-        if (plugin.settings().placePlates()) {
-            Plates.remove(course.start(), plates.start());
-            Plates.remove(course.finish(), plates.finish());
-            course.checkpoints().forEach(loc -> Plates.remove(loc, plates.checkpoint()));
-        }
-        plugin.holograms().remove(course.id());
+        plugin.displays().remove(course.id());
         plugin.leaderboard().reset(course.id());
         plugin.courses().delete(course.id());
         plugin.messages().send(sender(ctx), "course.deleted", Messages.course(course));
@@ -86,7 +78,7 @@ final class AdminCommands extends CommandGroup {
         if (course == null) return 0;
         course.name(StringArgumentType.getString(ctx, "name"));
         plugin.courses().save();
-        plugin.holograms().rebuild(course);
+        plugin.displays().rebuild(course);
         plugin.messages().send(sender(ctx), "course.renamed", Messages.course(course));
         return OK;
     }
@@ -104,7 +96,7 @@ final class AdminCommands extends CommandGroup {
             plugin.messages().send(sender, "top.unknown-player", Messages.of("player", name));
             return 0;
         }
-        plugin.holograms().refresh(course);
+        plugin.displays().refresh(course);
         return OK;
     }
 

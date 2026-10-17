@@ -5,8 +5,7 @@ import io.github.salkscore.parkour.client.ClientBridge;
 import io.github.salkscore.parkour.command.ParkourCommand;
 import io.github.salkscore.parkour.course.Course;
 import io.github.salkscore.parkour.course.CourseManager;
-import io.github.salkscore.parkour.holo.HologramManager;
-import io.github.salkscore.parkour.holo.PointParticles;
+import io.github.salkscore.parkour.display.DisplayManager;
 import io.github.salkscore.parkour.run.ItemListener;
 import io.github.salkscore.parkour.run.ProtectionListener;
 import io.github.salkscore.parkour.run.RunHud;
@@ -26,7 +25,7 @@ public final class ParkourPlugin extends JavaPlugin {
     private Messages messages;
     private CourseManager courses;
     private Leaderboard leaderboard;
-    private HologramManager holograms;
+    private DisplayManager displays;
     private RunManager runs;
     private ClientBridge bridge;
 
@@ -37,29 +36,28 @@ public final class ParkourPlugin extends JavaPlugin {
         messages = new Messages(this);
         courses = new CourseManager(this);
         leaderboard = new Leaderboard(this);
-        holograms = new HologramManager(this);
+        displays = new DisplayManager(this);
         runs = new RunManager(this);
         bridge = new ClientBridge(this);
         bridge.register();
 
         courses.load();
         leaderboard.load();
-        holograms.rebuildAll();
+        displays.rebuildAll();
         for (Player player : Bukkit.getOnlinePlayers()) {
             runs.restorePending(player);
         }
 
         listen(new RunListener(this), new ProtectionListener(this),
-                new ItemListener(this), holograms, bridge);
+                new ItemListener(this), displays, bridge);
         Bukkit.getScheduler().runTaskTimer(this, new RunHud(this), 1L, 2L);
-        Bukkit.getScheduler().runTaskTimer(this, new PointParticles(this), 20L, 4L);
         ParkourCommand.register(this);
     }
 
     @Override
     public void onDisable() {
         if (runs != null) runs.stopAll(StopReason.SHUTDOWN);
-        if (holograms != null) holograms.clear();
+        if (displays != null) displays.clear();
         if (leaderboard != null) leaderboard.close();
     }
 
@@ -67,13 +65,13 @@ public final class ParkourPlugin extends JavaPlugin {
         reloadConfig();
         settings = Settings.load(getConfig());
         messages.reload();
-        holograms.rebuildAll();
+        displays.rebuildAll();
     }
 
     public void refresh(Course course) {
         courses.save();
         runs.stopAll(course, StopReason.EDIT);
-        holograms.rebuild(course);
+        displays.rebuild(course);
     }
 
     private void listen(Listener... listeners) {
@@ -98,8 +96,8 @@ public final class ParkourPlugin extends JavaPlugin {
         return leaderboard;
     }
 
-    public HologramManager holograms() {
-        return holograms;
+    public DisplayManager displays() {
+        return displays;
     }
 
     public RunManager runs() {

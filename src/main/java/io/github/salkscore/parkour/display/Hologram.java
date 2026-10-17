@@ -1,4 +1,4 @@
-package io.github.salkscore.parkour.holo;
+package io.github.salkscore.parkour.display;
 
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
@@ -6,31 +6,33 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.plugin.Plugin;
 
-final class Hologram {
+final class Hologram implements Visual {
 
     private static final Color BACKGROUND = Color.fromARGB(80, 0, 0, 0);
 
     private final Location location;
     private final Supplier<Component> text;
+    // le mod affiche sa propre version, avec le record du joueur
+    private final boolean drawnByMod;
     private TextDisplay entity;
 
-    Hologram(Location location, Supplier<Component> text) {
+    Hologram(Location location, Supplier<Component> text, boolean drawnByMod) {
         this.location = location;
         this.text = text;
+        this.drawnByMod = drawnByMod;
     }
 
-    boolean spawn() {
+    @Override
+    public boolean spawn() {
         if (entity != null && entity.isValid()) return false;
         World world = location.getWorld();
-        if (world == null || !world.isChunkLoaded(chunkX(), chunkZ())) return false;
+        if (world == null || !location.isChunkLoaded()) return false;
         entity = world.spawn(location, TextDisplay.class, this::setup);
         return true;
-    }
-
-    TextDisplay entity() {
-        return entity != null && entity.isValid() ? entity : null;
     }
 
     private void setup(TextDisplay display) {
@@ -43,24 +45,26 @@ final class Hologram {
         display.text(text.get());
     }
 
-    void update() {
+    @Override
+    public void update() {
         if (entity != null && entity.isValid()) entity.text(text.get());
     }
 
-    void remove() {
+    @Override
+    public void remove() {
         if (entity != null) entity.remove();
         entity = null;
     }
 
-    boolean isIn(World world, int x, int z) {
-        return world.equals(location.getWorld()) && chunkX() == x && chunkZ() == z;
+    @Override
+    public boolean isIn(World world, int chunkX, int chunkZ) {
+        return world.equals(location.getWorld())
+                && location.getBlockX() >> 4 == chunkX
+                && location.getBlockZ() >> 4 == chunkZ;
     }
 
-    private int chunkX() {
-        return location.getBlockX() >> 4;
-    }
-
-    private int chunkZ() {
-        return location.getBlockZ() >> 4;
+    @Override
+    public void hideFrom(Player player, Plugin plugin) {
+        if (drawnByMod && entity != null && entity.isValid()) player.hideEntity(plugin, entity);
     }
 }

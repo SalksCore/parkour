@@ -11,7 +11,7 @@ le plugin gère le chrono, les classements et les hologrammes.
 - Objets dans la barre : dernier checkpoint, recommencer, abandonner
 - Classement par parcours, record perso, annonce quand quelqu'un prend la première place
 - Hologrammes (text displays) au-dessus de chaque point et un tableau des meilleurs temps
-- Particules colorées sur les plaques
+- Pas de plaque de pression : chaque point est un carré tracé au sol (vert, jaune, rouge)
 - Inventaire, mode de jeu et effets rendus à la sortie, même après un crash serveur
 - Tous les textes en MiniMessage dans `messages.yml`
 
@@ -36,8 +36,8 @@ Il faut Paper (ou un fork) en 1.21 et Java 21.
 /pk rename jump <gradient:#5eead4:#3b82f6>Jump Tower</gradient>
 ```
 
-Les plaques de pression sont posées toutes seules si le bloc est vide (désactivable dans
-`config.yml`). Le joueur démarre en marchant sur le départ ou avec `/pk join jump`.
+Chaque point est marqué par un carré au sol, sur le bloc où tu te tenais. Le joueur
+démarre en entrant dans le carré de départ ou avec `/pk join jump`.
 
 ## Commandes
 
@@ -68,7 +68,7 @@ Les plaques de pression sont posées toutes seules si le bloc est vide (désacti
 
 ## Fichiers
 
-- `config.yml` : plaques, mode de jeu pendant la partie, objets, bossbar, hologrammes
+- `config.yml` : couleurs des carrés, mode de jeu pendant la partie, objets, bossbar, hologrammes
 - `messages.yml` : tous les textes
 - `courses.yml` : les parcours
 - `times.yml` : les meilleurs temps

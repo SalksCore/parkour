@@ -1,9 +1,8 @@
-# Pose une plaque de pression quand un point est placé sur un bloc vide
-place-plates: true
-plates:
-  start: LIGHT_WEIGHTED_PRESSURE_PLATE
-  checkpoint: HEAVY_WEIGHTED_PRESSURE_PLATE
-  finish: LIGHT_WEIGHTED_PRESSURE_PLATE
+# Bloc utilisé pour tracer le carré au sol de chaque point
+squares:
+  start: LIME_CONCRETE
+  checkpoint: YELLOW_CONCRETE
+  finish: RED_CONCRETE
 
 run:
   gamemode: ADVENTURE
@@ -36,4 +35,3 @@ holograms:
   height: 1.4
   board-size: 10
 
-particles: true

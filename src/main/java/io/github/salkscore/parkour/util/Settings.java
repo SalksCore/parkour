@@ -10,8 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public record Settings(
-        boolean placePlates,
-        Plates plates,
+        Squares squares,
         GameMode gameMode,
         boolean noDamage,
         boolean noHunger,
@@ -22,20 +21,19 @@ public record Settings(
         BossBar.Color barColor,
         boolean holograms,
         double holoHeight,
-        int boardSize,
-        boolean particles) {
+        int boardSize) {
 
-    public record Plates(Material start, Material checkpoint, Material finish) {
+    public record Squares(Material start, Material checkpoint, Material finish) {
     }
 
     public record ItemSlot(Material material, int slot) {
     }
 
     public static Settings load(FileConfiguration c) {
-        Plates plates = new Plates(
-                material(c, "plates.start", Material.LIGHT_WEIGHTED_PRESSURE_PLATE),
-                material(c, "plates.checkpoint", Material.HEAVY_WEIGHTED_PRESSURE_PLATE),
-                material(c, "plates.finish", Material.LIGHT_WEIGHTED_PRESSURE_PLATE));
+        Squares squares = new Squares(
+                material(c, "squares.start", Material.LIME_CONCRETE),
+                material(c, "squares.checkpoint", Material.YELLOW_CONCRETE),
+                material(c, "squares.finish", Material.RED_CONCRETE));
 
         Map<RunItem, ItemSlot> items = new EnumMap<>(RunItem.class);
         for (RunItem item : RunItem.values()) {
@@ -46,8 +44,7 @@ public record Settings(
         }
 
         return new Settings(
-                c.getBoolean("place-plates", true),
-                plates,
+                squares,
                 parse(GameMode.class, c.getString("run.gamemode"), GameMode.ADVENTURE),
                 c.getBoolean("run.no-damage", true),
                 c.getBoolean("run.no-hunger", true),
@@ -58,13 +55,12 @@ public record Settings(
                 parse(BossBar.Color.class, c.getString("hud.bossbar-color"), BossBar.Color.GREEN),
                 c.getBoolean("holograms.enabled", true),
                 c.getDouble("holograms.height", 1.4),
-                Math.max(1, c.getInt("holograms.board-size", 10)),
-                c.getBoolean("particles", true));
+                Math.max(1, c.getInt("holograms.board-size", 10)));
     }
 
     private static Material material(FileConfiguration c, String path, Material fallback) {
         Material type = Material.matchMaterial(c.getString(path, ""));
-        return type != null ? type : fallback;
+        return type != null && type.isBlock() ? type : fallback;
     }
 
     private static <E extends Enum<E>> E parse(Class<E> type, String raw, E fallback) {

@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.salkscore.parkour.ParkourPlugin;
 import io.github.salkscore.parkour.course.Course;
-import io.github.salkscore.parkour.course.Plates;
 import io.github.salkscore.parkour.course.Point;
 import io.github.salkscore.parkour.util.Locations;
 import io.github.salkscore.parkour.util.Messages;
@@ -15,7 +14,6 @@ import io.papermc.paper.command.brigadier.Commands;
 import java.util.List;
 import java.util.Locale;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 final class EditCommands extends CommandGroup {
@@ -64,12 +62,10 @@ final class EditCommands extends CommandGroup {
         switch (target) {
             case START -> {
                 if (occupied(player, loc, course, Point.Type.START)) return 0;
-                movePlate(course.start(), loc, plugin.settings().plates().start());
                 course.start(loc);
             }
             case FINISH -> {
                 if (occupied(player, loc, course, Point.Type.FINISH)) return 0;
-                movePlate(course.finish(), loc, plugin.settings().plates().finish());
                 course.finish(loc);
             }
             case SPAWN -> course.spawn(player.getLocation());
@@ -107,7 +103,6 @@ final class EditCommands extends CommandGroup {
         if (occupied(player, loc, course, null)) return 0;
 
         course.checkpoints().add(loc);
-        movePlate(null, loc, plugin.settings().plates().checkpoint());
         plugin.refresh(course);
         plugin.messages().send(player, "edit.checkpoint-added", Messages.of("n", course.size()));
         return OK;
@@ -122,10 +117,7 @@ final class EditCommands extends CommandGroup {
             return 0;
         }
 
-        Location removed = course.checkpoints().remove(n - 1);
-        if (plugin.settings().placePlates()) {
-            Plates.remove(removed, plugin.settings().plates().checkpoint());
-        }
+        course.checkpoints().remove(n - 1);
         plugin.refresh(course);
         plugin.messages().send(sender(ctx), "edit.checkpoint-removed", Messages.of("n", n));
         return OK;
@@ -136,11 +128,5 @@ final class EditCommands extends CommandGroup {
         if (point == null || point.course() == course && point.type() == type) return false;
         plugin.messages().send(player, "edit.occupied");
         return true;
-    }
-
-    private void movePlate(Location from, Location to, Material type) {
-        if (!plugin.settings().placePlates()) return;
-        Plates.remove(from, type);
-        Plates.place(to, type);
     }
 }

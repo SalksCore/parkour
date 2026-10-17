@@ -1,9 +1,10 @@
-package io.github.salkscore.parkour.holo;
+package io.github.salkscore.parkour.display;
 
 import io.github.salkscore.parkour.ParkourPlugin;
 import io.github.salkscore.parkour.board.Leaderboard;
 import io.github.salkscore.parkour.course.Course;
 import io.github.salkscore.parkour.util.Messages;
+import io.github.salkscore.parkour.util.Settings;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -11,37 +12,50 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Location;
 
-final class CourseHolograms {
+final class CourseVisuals {
 
     private final ParkourPlugin plugin;
     private final Messages messages;
 
-    CourseHolograms(ParkourPlugin plugin) {
+    CourseVisuals(ParkourPlugin plugin) {
         this.plugin = plugin;
         this.messages = plugin.messages();
     }
 
-    List<Hologram> create(Course course) {
+    List<Visual> create(Course course) {
+        Settings.Squares squares = plugin.settings().squares();
+        List<Visual> list = new ArrayList<>();
+        if (course.start() != null) list.add(new Square(course.start(), squares.start()));
+        course.checkpoints().forEach(loc -> list.add(new Square(loc, squares.checkpoint())));
+        if (course.finish() != null) list.add(new Square(course.finish(), squares.finish()));
+        if (plugin.settings().holograms()) list.addAll(texts(course));
+        return list;
+    }
+
+    private List<Visual> texts(Course course) {
         TagResolver tags = Messages.course(course);
-        List<Hologram> list = new ArrayList<>();
+        List<Visual> list = new ArrayList<>();
         if (course.start() != null) {
-            list.add(new Hologram(above(course.start()), () -> messages.get("holo.start", tags)));
+            list.add(text(above(course.start()), "holo.start", tags, true));
         }
 
         List<Location> checkpoints = course.checkpoints();
         for (int i = 0; i < checkpoints.size(); i++) {
             TagResolver n = TagResolver.resolver(tags, Messages.of("n", i + 1));
-            Location loc = above(checkpoints.get(i));
-            list.add(new Hologram(loc, () -> messages.get("holo.checkpoint", n)));
+            list.add(text(above(checkpoints.get(i)), "holo.checkpoint", n, false));
         }
 
         if (course.finish() != null) {
-            list.add(new Hologram(above(course.finish()), () -> messages.get("holo.finish", tags)));
+            list.add(text(above(course.finish()), "holo.finish", tags, false));
         }
         if (course.board() != null) {
-            list.add(new Hologram(course.board().clone(), () -> board(course)));
+            list.add(new Hologram(course.board().clone(), () -> board(course), true));
         }
         return list;
+    }
+
+    private Hologram text(Location loc, String key, TagResolver tags, boolean drawnByMod) {
+        return new Hologram(loc, () -> messages.get(key, tags), drawnByMod);
     }
 
     private Component board(Course course) {

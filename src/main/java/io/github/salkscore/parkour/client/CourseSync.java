@@ -10,7 +10,6 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-// Liste des parcours, de leur classement et du record du joueur, pour l'affichage du mod
 final class CourseSync {
 
     private static final int TOP = 10;
@@ -35,20 +34,11 @@ final class CourseSync {
         packet.writeString(course.id())
                 .writeString(name(course))
                 .writeString(start.getWorld().getKey().toString());
-        position(packet, start).writeFloat(start.getYaw());
+        position(packet, start);
 
         Location board = course.board();
         packet.writeBoolean(board != null);
         if (board != null) position(packet, board);
-
-        Location finish = course.finish();
-        packet.writeBoolean(finish != null);
-        if (finish != null) position(packet, finish).writeFloat(finish.getYaw());
-
-        packet.writeVarInt(course.size());
-        for (Location checkpoint : course.checkpoints()) {
-            position(packet, checkpoint);
-        }
 
         Leaderboard leaderboard = plugin.leaderboard();
         List<Leaderboard.Entry> top = leaderboard.top(course.id(), TOP);

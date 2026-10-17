@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-// Parle au mod client Parkour Companion quand le joueur l'a installé
 public final class ClientBridge implements PluginMessageListener, Listener {
 
     public static final String RUN = "parkour:run";
@@ -37,7 +36,7 @@ public final class ClientBridge implements PluginMessageListener, Listener {
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!HELLO.equals(channel) || !modded.add(player.getUniqueId())) return;
-        plugin.holograms().hideFrom(player);
+        plugin.displays().hideFrom(player);
         sync(player);
     }
 
