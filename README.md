@@ -85,3 +85,9 @@ Le jar sort dans `target/`.
 ## Licence
 
 MIT
+
+## Mod client
+
+Avec le mod [Parkour Companion](https://github.com/SalksCore/parkour-companion), les
+joueurs ont le fantôme de leur record, les temps intermédiaires, un HUD dédié et des
+checkpoints visibles à travers les murs. Le plugin détecte le mod tout seul.

@@ -1,6 +1,7 @@
 package io.github.salkscore.parkour;
 
 import io.github.salkscore.parkour.board.Leaderboard;
+import io.github.salkscore.parkour.client.ClientBridge;
 import io.github.salkscore.parkour.command.ParkourCommand;
 import io.github.salkscore.parkour.course.Course;
 import io.github.salkscore.parkour.course.CourseManager;
@@ -27,6 +28,7 @@ public final class ParkourPlugin extends JavaPlugin {
     private Leaderboard leaderboard;
     private HologramManager holograms;
     private RunManager runs;
+    private ClientBridge bridge;
 
     @Override
     public void onEnable() {
@@ -37,6 +39,8 @@ public final class ParkourPlugin extends JavaPlugin {
         leaderboard = new Leaderboard(this);
         holograms = new HologramManager(this);
         runs = new RunManager(this);
+        bridge = new ClientBridge(this);
+        bridge.register();
 
         courses.load();
         leaderboard.load();
@@ -46,7 +50,7 @@ public final class ParkourPlugin extends JavaPlugin {
         }
 
         listen(new RunListener(this), new ProtectionListener(this),
-                new ItemListener(this), holograms);
+                new ItemListener(this), holograms, bridge);
         Bukkit.getScheduler().runTaskTimer(this, new RunHud(this), 1L, 2L);
         Bukkit.getScheduler().runTaskTimer(this, new PointParticles(this), 20L, 4L);
         ParkourCommand.register(this);
@@ -100,5 +104,9 @@ public final class ParkourPlugin extends JavaPlugin {
 
     public RunManager runs() {
         return runs;
+    }
+
+    public ClientBridge bridge() {
+        return bridge;
     }
 }
