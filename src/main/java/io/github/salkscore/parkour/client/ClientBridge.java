@@ -2,13 +2,11 @@ package io.github.salkscore.parkour.client;
 
 import io.github.salkscore.parkour.ParkourPlugin;
 import io.github.salkscore.parkour.course.Course;
-import io.github.salkscore.parkour.util.Messages;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,7 +36,20 @@ public final class ClientBridge implements PluginMessageListener, Listener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (HELLO.equals(channel)) modded.add(player.getUniqueId());
+        if (!HELLO.equals(channel) || !modded.add(player.getUniqueId())) return;
+        plugin.holograms().hideFrom(player);
+        sync(player);
+    }
+
+    public void sync(Player player) {
+        if (hasMod(player)) send(player, CourseSync.packet(plugin, player));
+    }
+
+    public void syncAll() {
+        for (UUID id : modded) {
+            Player player = plugin.getServer().getPlayer(id);
+            if (player != null) sync(player);
+        }
     }
 
     @EventHandler
@@ -57,10 +68,9 @@ public final class ClientBridge implements PluginMessageListener, Listener {
         points.addAll(course.checkpoints());
         points.add(course.finish());
 
-        String name = GsonComponentSerializer.gson().serialize(Messages.parse(course.name()));
         PacketWriter packet = new PacketWriter(PacketType.START)
                 .writeString(course.id())
-                .writeString(name)
+                .writeString(CourseSync.name(course))
                 .writeString(course.start().getWorld().getKey().toString())
                 .writeVarInt(points.size());
         for (Location loc : points) {
@@ -84,7 +94,7 @@ public final class ClientBridge implements PluginMessageListener, Listener {
         if (hasMod(player)) send(player, new PacketWriter(PacketType.STOP));
     }
 
-    private void send(Player player, PacketWriter packet) {
+    void send(Player player, PacketWriter packet) {
         player.sendPluginMessage(plugin, RUN, packet.toByteArray());
     }
 }

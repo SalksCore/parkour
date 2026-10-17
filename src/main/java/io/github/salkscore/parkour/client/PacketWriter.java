@@ -42,6 +42,19 @@ final class PacketWriter {
         return this;
     }
 
+    PacketWriter writeBoolean(boolean value) {
+        return writeByte(value ? 1 : 0);
+    }
+
+    PacketWriter writeFloat(float value) {
+        try {
+            out.writeFloat(value);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return this;
+    }
+
     PacketWriter writeDouble(double value) {
         return writeLong(Double.doubleToRawLongBits(value));
     }

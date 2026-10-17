@@ -6,12 +6,15 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 public final class PointParticles implements Runnable {
 
     private static final Particle.DustOptions START = dust(0x22C55E);
     private static final Particle.DustOptions CHECKPOINT = dust(0xFACC15);
     private static final Particle.DustOptions FINISH = dust(0xEF4444);
+
+    private static final double RANGE = 48 * 48;
 
     private final ParkourPlugin plugin;
     private int tick;
@@ -39,8 +42,13 @@ public final class PointParticles implements Runnable {
         for (int i = 0; i < 3; i++) {
             double angle = tick * 0.3 + i * (Math.PI * 2 / 3);
             double x = loc.getBlockX() + 0.5 + Math.cos(angle) * 0.5;
+            double y = loc.getBlockY() + 0.2;
             double z = loc.getBlockZ() + 0.5 + Math.sin(angle) * 0.5;
-            world.spawnParticle(Particle.DUST, x, loc.getBlockY() + 0.2, z, 1, 0, 0, 0, 0, dust);
+            for (Player player : world.getPlayers()) {
+                if (plugin.bridge().hasMod(player)) continue;
+                if (player.getLocation().distanceSquared(loc) > RANGE) continue;
+                player.spawnParticle(Particle.DUST, x, y, z, 1, 0, 0, 0, 0, dust);
+            }
         }
     }
 

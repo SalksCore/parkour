@@ -21,11 +21,16 @@ final class Hologram {
         this.text = text;
     }
 
-    void spawn() {
-        if (entity != null && entity.isValid()) return;
+    boolean spawn() {
+        if (entity != null && entity.isValid()) return false;
         World world = location.getWorld();
-        if (world == null || !world.isChunkLoaded(chunkX(), chunkZ())) return;
+        if (world == null || !world.isChunkLoaded(chunkX(), chunkZ())) return false;
         entity = world.spawn(location, TextDisplay.class, this::setup);
+        return true;
+    }
+
+    TextDisplay entity() {
+        return entity != null && entity.isValid() ? entity : null;
     }
 
     private void setup(TextDisplay display) {
