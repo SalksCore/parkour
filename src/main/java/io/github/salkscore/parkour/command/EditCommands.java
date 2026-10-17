@@ -1,6 +1,5 @@
 package io.github.salkscore.parkour.command;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -45,12 +44,6 @@ final class EditCommands extends CommandGroup {
 
         root.then(literal("set").then(set));
         root.then(literal("unset").then(unset));
-        root.then(literal("addcp").then(courseArg().executes(this::addCheckpoint)));
-        root.then(literal("delcp").then(courseArg()
-                .executes(ctx -> removeCheckpoint(ctx, -1))
-                .then(Commands.argument("n", IntegerArgumentType.integer(1))
-                        .executes(ctx -> removeCheckpoint(ctx,
-                                IntegerArgumentType.getInteger(ctx, "n"))))));
     }
 
     private int set(CommandContext<CommandSourceStack> ctx, Target target) {
@@ -92,34 +85,6 @@ final class EditCommands extends CommandGroup {
         }
         plugin.refresh(course);
         plugin.messages().send(sender(ctx), "edit.unset");
-        return OK;
-    }
-
-    private int addCheckpoint(CommandContext<CommandSourceStack> ctx) {
-        Player player = player(ctx);
-        Course course = player == null ? null : course(ctx);
-        if (course == null) return 0;
-        Location loc = Locations.snap(player.getLocation());
-        if (occupied(player, loc, course, null)) return 0;
-
-        course.checkpoints().add(loc);
-        plugin.refresh(course);
-        plugin.messages().send(player, "edit.checkpoint-added", Messages.of("n", course.size()));
-        return OK;
-    }
-
-    private int removeCheckpoint(CommandContext<CommandSourceStack> ctx, int index) {
-        Course course = course(ctx);
-        if (course == null) return 0;
-        int n = index == -1 ? course.size() : index;
-        if (n < 1 || n > course.size()) {
-            plugin.messages().send(sender(ctx), "edit.no-checkpoint");
-            return 0;
-        }
-
-        course.checkpoints().remove(n - 1);
-        plugin.refresh(course);
-        plugin.messages().send(sender(ctx), "edit.checkpoint-removed", Messages.of("n", n));
         return OK;
     }
 

@@ -34,11 +34,11 @@ final class CourseSync {
         packet.writeString(course.id())
                 .writeString(name(course))
                 .writeString(start.getWorld().getKey().toString());
-        position(packet, start);
+        packet.writePosition(start);
 
         Location board = course.board();
         packet.writeBoolean(board != null);
-        if (board != null) position(packet, board);
+        if (board != null) packet.writePosition(board);
 
         Leaderboard leaderboard = plugin.leaderboard();
         List<Leaderboard.Entry> top = leaderboard.top(course.id(), TOP);
@@ -52,9 +52,6 @@ final class CourseSync {
         packet.writeVarInt(leaderboard.rank(course.id(), player.getUniqueId()));
     }
 
-    private static PacketWriter position(PacketWriter packet, Location loc) {
-        return packet.writeDouble(loc.getX()).writeDouble(loc.getY()).writeDouble(loc.getZ());
-    }
 
     static String name(Course course) {
         return GsonComponentSerializer.gson().serialize(Messages.parse(course.name()));

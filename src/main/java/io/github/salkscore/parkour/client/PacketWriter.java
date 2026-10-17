@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import org.bukkit.Location;
 
 // Même format que FriendlyByteBuf côté client : varint, big endian, chaînes en UTF-8
 final class PacketWriter {
@@ -48,6 +49,10 @@ final class PacketWriter {
 
     PacketWriter writeDouble(double value) {
         return writeLong(Double.doubleToRawLongBits(value));
+    }
+
+    PacketWriter writePosition(Location loc) {
+        return writeDouble(loc.getX()).writeDouble(loc.getY()).writeDouble(loc.getZ());
     }
 
     PacketWriter writeString(String value) {

@@ -52,7 +52,8 @@ démarre en entrant dans le carré de départ ou avec `/pk join jump`.
 | `/pk create <id>` | Créer un parcours |
 | `/pk set <parcours> start\|finish\|spawn\|board\|fall` | Placer un point à ta position |
 | `/pk unset <parcours> spawn\|board\|fall` | Retirer un point optionnel |
-| `/pk addcp <parcours>` | Ajouter un checkpoint |
+| `/pk addcp <parcours> [n]` | Ajouter un checkpoint, à la fin ou au numéro donné |
+| `/pk movecp <parcours> <de> <vers>` | Changer le numéro d'un checkpoint |
 | `/pk delcp <parcours> [n]` | Retirer un checkpoint (le dernier par défaut) |
 | `/pk rename <parcours> <nom>` | Nom affiché, MiniMessage accepté |
 | `/pk info <parcours>` | Détails du parcours |

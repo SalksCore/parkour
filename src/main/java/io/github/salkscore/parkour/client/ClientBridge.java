@@ -72,9 +72,7 @@ public final class ClientBridge implements PluginMessageListener, Listener {
                 .writeString(CourseSync.name(course))
                 .writeString(course.start().getWorld().getKey().toString())
                 .writeVarInt(points.size());
-        for (Location loc : points) {
-            packet.writeDouble(loc.getX()).writeDouble(loc.getY()).writeDouble(loc.getZ());
-        }
+        points.forEach(packet::writePosition);
         send(player, packet);
     }
 
@@ -84,13 +82,13 @@ public final class ClientBridge implements PluginMessageListener, Listener {
     }
 
     public void finish(Player player, long time, int rank) {
-        if (hasMod(player)) {
-            send(player, new PacketWriter(PacketType.FINISH).writeLong(time).writeVarInt(rank));
-        }
+        if (!hasMod(player)) return;
+        send(player, new PacketWriter(PacketType.FINISH).writeLong(time).writeVarInt(rank));
     }
 
     public void stop(Player player) {
-        if (hasMod(player)) send(player, new PacketWriter(PacketType.STOP));
+        if (!hasMod(player)) return;
+        send(player, new PacketWriter(PacketType.STOP));
     }
 
     void send(Player player, PacketWriter packet) {

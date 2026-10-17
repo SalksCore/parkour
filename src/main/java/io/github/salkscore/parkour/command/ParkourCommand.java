@@ -22,6 +22,7 @@ public final class ParkourCommand {
         new PlayerCommands(plugin).attach(root);
         new AdminCommands(plugin).attach(root);
         new EditCommands(plugin).attach(root);
+        new CheckpointCommands(plugin).attach(root);
 
         LiteralCommandNode<CommandSourceStack> node = root.build();
         plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
