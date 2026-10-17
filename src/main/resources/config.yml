@@ -1,0 +1,39 @@
+# Pose une plaque de pression quand un point est placé sur un bloc vide
+place-plates: true
+plates:
+  start: LIGHT_WEIGHTED_PRESSURE_PLATE
+  checkpoint: HEAVY_WEIGHTED_PRESSURE_PLATE
+  finish: LIGHT_WEIGHTED_PRESSURE_PLATE
+
+run:
+  gamemode: ADVENTURE
+  no-damage: true
+  no-hunger: true
+  # Renvoie au dernier checkpoint au contact de l'eau ou de la lave
+  reset-on-water: true
+  reset-on-lava: true
+
+items:
+  checkpoint:
+    enabled: true
+    slot: 0
+    material: LIME_DYE
+  restart:
+    enabled: true
+    slot: 4
+    material: YELLOW_DYE
+  leave:
+    enabled: true
+    slot: 8
+    material: RED_DYE
+
+hud:
+  bossbar: true
+  bossbar-color: GREEN
+
+holograms:
+  enabled: true
+  height: 1.4
+  board-size: 10
+
+particles: true

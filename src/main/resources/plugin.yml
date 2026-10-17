@@ -1,0 +1,16 @@
+name: Parkour
+version: '${project.version}'
+main: io.github.salkscore.parkour.ParkourPlugin
+api-version: '1.21'
+author: SalksCore
+description: Parcours avec checkpoints, chrono, classements et hologrammes.
+website: https://github.com/SalksCore/parkour
+softdepend: [Multiverse-Core]
+
+permissions:
+  parkour.use:
+    description: Jouer aux parcours
+    default: true
+  parkour.admin:
+    description: Créer et modifier les parcours
+    default: op
