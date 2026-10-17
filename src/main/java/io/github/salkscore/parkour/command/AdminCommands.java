@@ -66,9 +66,9 @@ final class AdminCommands extends CommandGroup {
         if (course == null) return 0;
         plugin.runs().stopAll(course, StopReason.EDIT);
 
-        plugin.displays().remove(course.id());
-        plugin.leaderboard().reset(course.id());
         plugin.courses().delete(course.id());
+        plugin.leaderboard().reset(course.id());
+        plugin.displays().remove(course.id());
         plugin.messages().send(sender(ctx), "course.deleted", Messages.course(course));
         return OK;
     }
