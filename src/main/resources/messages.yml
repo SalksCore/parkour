@@ -102,7 +102,7 @@ items:
 
 holo:
   start: "<course><newline><gray>Départ"
-  checkpoint: "<yellow><n>"
+  checkpoint: "<yellow>Checkpoint <n>"
   finish: "<red>Arrivée"
   board-header: "<course><newline><gray>Meilleurs temps"
   board-line: "<gray><rank>. <white><player> <gray><time>"
