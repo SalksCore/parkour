@@ -34,17 +34,20 @@ final class CourseSync {
         Location start = course.start();
         packet.writeString(course.id())
                 .writeString(name(course))
-                .writeString(start.getWorld().getKey().toString())
-                .writeVarInt(course.size())
-                .writeDouble(start.getX())
-                .writeDouble(start.getY())
-                .writeDouble(start.getZ())
-                .writeFloat(start.getYaw());
+                .writeString(start.getWorld().getKey().toString());
+        position(packet, start).writeFloat(start.getYaw());
 
         Location board = course.board();
         packet.writeBoolean(board != null);
-        if (board != null) {
-            packet.writeDouble(board.getX()).writeDouble(board.getY()).writeDouble(board.getZ());
+        if (board != null) position(packet, board);
+
+        Location finish = course.finish();
+        packet.writeBoolean(finish != null);
+        if (finish != null) position(packet, finish).writeFloat(finish.getYaw());
+
+        packet.writeVarInt(course.size());
+        for (Location checkpoint : course.checkpoints()) {
+            position(packet, checkpoint);
         }
 
         Leaderboard leaderboard = plugin.leaderboard();
@@ -57,6 +60,10 @@ final class CourseSync {
         Leaderboard.Entry best = leaderboard.best(course.id(), player.getUniqueId());
         packet.writeLong(best == null ? -1L : best.time());
         packet.writeVarInt(leaderboard.rank(course.id(), player.getUniqueId()));
+    }
+
+    private static PacketWriter position(PacketWriter packet, Location loc) {
+        return packet.writeDouble(loc.getX()).writeDouble(loc.getY()).writeDouble(loc.getZ());
     }
 
     static String name(Course course) {
